@@ -1,0 +1,48 @@
+{
+  "name": "woong-blog-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "cross-env NODE_ENV=development ts-node-dev --respawn --transpile-only  ./src/index.ts",
+    "build": "tsc",
+    "start": "nodemon src/server.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@hapi/joi": "^17.1.1",
+    "@types/cookie-parser": "^1.4.2",
+    "@types/lodash": "^4.14.177",
+    "apollo-server": "^3.5.0",
+    "apollo-server-express": "^3.5.0",
+    "bcrypt": "^5.0.1",
+    "cloudinary": "^1.27.1",
+    "connect-redis": "^6.0.0",
+    "cookie-encrypter": "^1.0.1",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.2",
+    "graphql": "^16.0.1",
+    "ioredis": "^4.28.2",
+    "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.21",
+    "nodemon": "^2.0.15",
+    "passport": "^0.5.2",
+    "passport-github": "^1.1.0",
+    "pg": "^8.7.1",
+    "pm2": "^5.1.2",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.2.41"
+  },
+  "devDependencies": {
+    "@types/node": "^16.11.9",
+    "cross-env": "^7.0.3",
+    "ts-node": "^10.4.0",
+    "ts-node-dev": "^1.1.8",
+    "typescript": "^4.5.2"
+  }
+}

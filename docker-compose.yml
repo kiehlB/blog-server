@@ -1,0 +1,22 @@
+version: '3.7'
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: 1245
+      POSTGRES_USER: postgres
+      POSTGRES_DB: woongblog
+    ports:
+         - 2345:5432
+  app:
+    build: .
+    ports:
+      - 4000:4000
+    environment:
+      PORT: 4000
+    depends_on:
+      - postgres
+  nginx:
+    image: nginx:latest
+    ports:
+      - 8080:80
