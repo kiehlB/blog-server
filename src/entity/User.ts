@@ -8,9 +8,7 @@ import {
 } from 'typeorm';
 import UserProfile from './UserProfile';
 
-@Entity('users', {
-  synchronize: true,
-})
+@Entity('users')
 export default class User {
   @PrimaryGeneratedColumn()
   id!: number;

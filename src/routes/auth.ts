@@ -34,4 +34,4 @@ router.post('/refresh_token', async (req, res) => {
   return res.send({ ok: true, accessToken: createAccessToken(user) });
 });
 
-module.exports = router;
+export default router;

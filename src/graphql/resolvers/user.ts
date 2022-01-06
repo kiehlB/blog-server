@@ -57,9 +57,11 @@ export const resolvers = {
   },
   Query: {
     me: (_, __, { req }) => {
+      console.log('hello');
       if (!req.userId) {
         return null;
       }
+
       const users = getRepository(User);
 
       return users.findOne({ id: req.userId });

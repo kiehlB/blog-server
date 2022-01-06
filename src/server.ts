@@ -5,7 +5,7 @@ import cookieParser from 'cookie-parser';
 import { ApolloServer } from 'apollo-server-express';
 import schema from './graphql/schema.ts';
 import session from 'express-session';
-
+import auth from './routes/auth';
 import {
   ApolloServerPluginLandingPageGraphQLPlayground,
   ApolloServerPluginLandingPageDisabled,
@@ -19,6 +19,10 @@ import cookieEncrypter from 'cookie-encrypter';
 const app = express();
 
 app.use(cookieParser());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use('/', auth);
+
 app.use(ValidateTokensMiddleware);
 
 app.get('/', (_req, res) => res.send('hello'));
@@ -28,8 +32,6 @@ app.use(
     name: COOKIE_NAME,
     cookie: {
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
-      httpOnly: true,
-      sameSite: 'lax', // csrf
       secure: __prod__, // cookie only works in https
     },
     saveUninitialized: false,
@@ -38,8 +40,6 @@ app.use(
   }),
 );
 
-app.use(cookieParser(COOKIE_SECRET));
-app.use(cookieEncrypter(COOKIE_SECRET));
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -61,7 +61,13 @@ async function startServer() {
 
   await server.start();
 
-  server.applyMiddleware({ app });
+  server.applyMiddleware({
+    app,
+    cors: {
+      origin: 'http://localhost:3000',
+      credentials: true,
+    },
+  });
 }
 
 startServer();
