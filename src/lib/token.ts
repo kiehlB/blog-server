@@ -1,6 +1,27 @@
-import { sign, verify } from 'jsonwebtoken';
+import jwt, { sign, verify } from 'jsonwebtoken';
 import User from '../entity/User';
 import { Response } from 'express';
+
+export const generateToken = async (user: any, options?): Promise<string> => {
+  const jwtOptions = {
+    expiresIn: '7d',
+    ...options,
+  };
+
+  const secretKey = process.env.REFRESH_TOKEN_SECRET!;
+
+  if (!jwtOptions.expiresIn) {
+    // removes expiresIn when expiresIn is given as undefined
+    delete jwtOptions.expiresIn;
+  }
+  return new Promise((resolve, reject) => {
+    if (!secretKey) return;
+    jwt.sign(user, secretKey, jwtOptions, (err, token) => {
+      if (err) reject(err);
+      resolve(token);
+    });
+  });
+};
 
 export const createAccessToken = (user: User) => {
   return sign({ userId: user.id }, process.env.ACCESS_TOKEN_SECRET!, {
@@ -37,6 +58,32 @@ export const validateRefreshToken = (token: string) => {
     return null;
   }
 };
+export function setTokenCookie(
+  res,
+  tokens: { accessToken: string; refreshToken: string },
+) {
+  // set cookie
+  res.cookie('access_token', tokens.accessToken, {
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60,
+  });
+
+  res.cookie('refresh_token', tokens.refreshToken, {
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60 * 24 * 30,
+  });
+
+  // Following codes are for webpack-dev-server proxy
+  res.cookie('access_token', tokens.accessToken, {
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60,
+  });
+
+  res.cookie('refresh_token', tokens.refreshToken, {
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60 * 24 * 30,
+  });
+}
 
 export const createTokens = (user: User) => {
   const accessToken = createAccessToken(user);
@@ -45,9 +92,21 @@ export const createTokens = (user: User) => {
 };
 
 export const sendRefreshToken = (res: Response, token: string) => {
-  res.cookie('jid', token, {
+  res.cookie('refresh_token', token, {
     httpOnly: true,
     secure: false,
     maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+  });
+};
+
+export const decodeToken = async <T = any>(token: string): Promise<T> => {
+  const secretKey = process.env.REFRESH_TOKEN_SECRET!;
+
+  return new Promise((resolve, reject) => {
+    if (!secretKey) return;
+    jwt.verify(token, secretKey, (err, decoded) => {
+      if (err) reject(err);
+      resolve(decoded as any);
+    });
   });
 };

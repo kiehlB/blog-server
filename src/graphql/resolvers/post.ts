@@ -18,7 +18,7 @@ export const typeDef = gql`
     crop: String
   }
   type Post {
-    id: ID
+    id: String
     title: String
     body: String
     thumbnail: String
@@ -145,7 +145,6 @@ export const resolvers = {
     },
 
     tags: async (parent: Post, __, { loaders }) => {
-      console.log(loaders.tags.load(parent.id));
       return loaders.tags.load(parent.id);
     },
   },
@@ -230,11 +229,11 @@ export const resolvers = {
     },
   },
   Mutation: {
-    createPost: async (_, args, { req }) => {
+    createPost: async (_, args, { req, res }) => {
       const getPost = getRepository(Post);
       const postTags = getRepository(PostsTags);
 
-      if (!req.userId) {
+      if (!res.locals.user_id) {
         throw new AuthenticationError('plz login');
       }
 
@@ -247,7 +246,7 @@ export const resolvers = {
         throw new ApolloError('Title is empty');
       }
 
-      post.user_id = req.userId;
+      post.user_id = res.locals.user_id;
       post.title = title;
       post.body = body;
       post.thumbnail = thumbnail;
@@ -272,15 +271,15 @@ export const resolvers = {
       const fileStr = args.body;
       const uploadResponse = await cloudinary.uploader.upload(fileStr, {
         folder: 'woong',
-        width: 450,
-        height: 250,
+        width: 720,
+        height: 487,
         crop: 'scale',
       });
       return uploadResponse;
     },
 
-    editPost: async (_, args, { req }) => {
-      if (!req.userId) {
+    editPost: async (_, args, { req, res }) => {
+      if (!res.locals.user_id) {
         throw new AuthenticationError('plz login');
       }
 
@@ -297,7 +296,7 @@ export const resolvers = {
         throw new ApolloError('Post not found');
       }
 
-      if (post.user_id !== req.userId) {
+      if (post.user_id !== res.locals.user_id) {
         throw new ApolloError('this is not yours');
       }
 
@@ -310,8 +309,8 @@ export const resolvers = {
 
       return post;
     },
-    removePost: async (_, args, { req }) => {
-      if (!req.userId) {
+    removePost: async (_, args, { req, res }) => {
+      if (!res.locals.user_id) {
         throw new AuthenticationError('plz login');
       }
       const getPost = getRepository(Post);
@@ -326,7 +325,7 @@ export const resolvers = {
         throw new ApolloError('Post not found');
       }
 
-      if (post.user_id !== req.userId) {
+      if (post.user_id !== res.locals.user_id) {
         throw new ApolloError('This is not your post');
       }
 
@@ -335,8 +334,8 @@ export const resolvers = {
       return true;
     },
 
-    likePost: async (_, args, { req }) => {
-      if (!req.userId) {
+    likePost: async (_, args, { req, res }) => {
+      if (!res.locals.user_id) {
         throw new AuthenticationError('plz login');
       }
 
@@ -357,7 +356,7 @@ export const resolvers = {
       const alreadyLiked = await getLikePost.findOne({
         where: {
           post_id: args.id,
-          user_id: req.userId,
+          user_id: res.locals.user_id,
         },
       });
 
@@ -367,7 +366,7 @@ export const resolvers = {
 
       const postLike = new PostLike();
       postLike.post_id = args.id;
-      postLike.user_id = req.userId;
+      postLike.user_id = res.locals.user_id;
 
       try {
         await getLikePost.save(postLike);
@@ -389,14 +388,14 @@ export const resolvers = {
       score.type = 'LIKE';
       score.post_id = args.id;
       score.score = 5;
-      score.user_id = req.userId;
+      score.user_id = res.locals.user_id;
       await getPostScore.save(score);
 
       return post;
     },
 
-    unLikePost: async (_, args, { req }) => {
-      if (!req.userId) {
+    unLikePost: async (_, args, { req, res }) => {
+      if (!res.locals.user_id) {
         throw new AuthenticationError('plz login');
       }
 
@@ -417,7 +416,7 @@ export const resolvers = {
       const postLike = await getLikePost.findOne({
         where: {
           post_id: args.id,
-          user_id: req.userId,
+          user_id: res.locals.user_id,
         },
       });
 
@@ -440,7 +439,7 @@ export const resolvers = {
         .createQueryBuilder()
         .delete()
         .where('post_id = :postId', { postId: args.id })
-        .andWhere('user_id = :userId', { userId: req.userId })
+        .andWhere('user_id = :userId', { userId: res.locals.user_id })
         .andWhere("type = 'LIKE'")
         .execute();
 

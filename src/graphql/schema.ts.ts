@@ -1,6 +1,6 @@
 import * as user from './resolvers/user';
 import * as post from './resolvers/post';
-
+import * as comments from './resolvers/comments';
 import merge from 'lodash/merge';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 
@@ -15,6 +15,9 @@ const typeDef = `
     getImageUrl: ImageUrl
     topFivePost(offset: Int, limit: Int): [Post]
 
+
+    comment: [Comment]
+    subcomments(comment_id: String): [Comment]
 
   }
   type Mutation {
@@ -41,6 +44,9 @@ const typeDef = `
     postView(id: String!): Boolean
 
    
+    createComment(post_id: String, text: String, comment_id: String): Comment
+    removeComment(id: String!): Boolean
+    editComment(id: String, text: String): Comment
   }
 `;
 
@@ -50,8 +56,8 @@ const resolvers = {
 };
 
 const schema = makeExecutableSchema({
-  typeDefs: [typeDef, user.typeDef, post.typeDef],
-  resolvers: merge(resolvers, user.resolvers, post.resolvers),
+  typeDefs: [typeDef, user.typeDef, post.typeDef, comments.typeDef],
+  resolvers: merge(resolvers, user.resolvers, post.resolvers, comments.resolvers),
 });
 
 export default schema;

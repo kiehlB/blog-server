@@ -6,15 +6,14 @@ import { ApolloServer } from 'apollo-server-express';
 import schema from './graphql/schema.ts';
 import session from 'express-session';
 import auth from './routes/auth';
+import social from './routes';
 import {
   ApolloServerPluginLandingPageGraphQLPlayground,
   ApolloServerPluginLandingPageDisabled,
 } from 'apollo-server-core';
 import { ValidateTokensMiddleware } from './middlewares/ValidateTokensMiddleware';
-import passport from 'passport';
-
 import { __prod__, COOKIE_NAME, COOKIE_SECRET } from './constants';
-import cookieEncrypter from 'cookie-encrypter';
+import createLoaders from './loaders/createLoader';
 
 const app = express();
 
@@ -26,22 +25,7 @@ app.use('/', auth);
 app.use(ValidateTokensMiddleware);
 
 app.get('/', (_req, res) => res.send('hello'));
-app.use('/', require('./routes/github'));
-app.use(
-  session({
-    name: COOKIE_NAME,
-    cookie: {
-      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
-      secure: __prod__, // cookie only works in https
-    },
-    saveUninitialized: false,
-    secret: COOKIE_SECRET,
-    resave: false,
-  }),
-);
-
-app.use(passport.initialize());
-app.use(passport.session());
+app.use('/api/v2/auth', social);
 
 async function startServer() {
   const server = new ApolloServer({
@@ -49,6 +33,7 @@ async function startServer() {
     context: ({ req, res }) => ({
       req,
       res,
+      loaders: createLoaders(),
     }),
     introspection: true,
 

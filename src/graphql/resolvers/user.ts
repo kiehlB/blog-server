@@ -4,14 +4,19 @@ import { getRepository, getConnection } from 'typeorm';
 import bcrypt from 'bcrypt';
 import gql from 'graphql-tag';
 import { schema, schemaLogin } from '../../lib/authcheck';
-import { createAccessToken, createRefreshToken, sendRefreshToken } from '../../lib/token';
+import {
+  generateToken,
+  createRefreshToken,
+  sendRefreshToken,
+  setTokenCookie,
+} from '../../lib/token';
 import Following from '../../entity/Following';
 import Followers from '../../entity/Followers';
 import UserProfile from '../../entity/UserProfile';
 
 export const typeDef = gql`
   type User {
-    id: Int!
+    id: String
     username: String
     email: String
     password: String
@@ -25,17 +30,17 @@ export const typeDef = gql`
     created_at: String
   }
   type UserProfile {
-    id: ID!
+    id: String
     bio: String
     user_id: String
   }
   type Followers {
-    id: ID!
+    id: String
     user_id: String
     follower_id: String
   }
   type Following {
-    id: ID!
+    id: String
     user_id: String
     following_id: String
   }
@@ -56,15 +61,14 @@ export const resolvers = {
     },
   },
   Query: {
-    me: (_, __, { req }) => {
-      console.log('hello');
-      if (!req.userId) {
+    me: (_, __, { req, res }) => {
+      if (!res.locals.user_id) {
         return null;
       }
 
       const users = getRepository(User);
 
-      return users.findOne({ id: req.userId });
+      return users.findOne({ id: res.locals.user_id });
     },
     users: async () => {
       try {
@@ -134,14 +138,19 @@ export const resolvers = {
         });
       }
 
-      sendRefreshToken(res, createRefreshToken(user));
+      const tokens = await user.generateUserToken();
+
+      setTokenCookie(res, tokens);
 
       try {
         const result = await user;
         return {
           id: result.id,
           username: result.username,
-          accessToken: createAccessToken(user),
+          tokens: {
+            access_token: tokens.accessToken,
+            refresh_token: tokens.refreshToken,
+          },
         };
       } catch (ex) {
         throw ex;
@@ -181,8 +190,8 @@ export const resolvers = {
       return newUser;
     },
 
-    createProfile: async (_, { bio }, { req }) => {
-      if (!req.userId) {
+    createProfile: async (_, { bio }, { req, res }) => {
+      if (!res.locals.user_id) {
         throw new AuthenticationError('plz Loginin');
       }
 
@@ -190,14 +199,14 @@ export const resolvers = {
 
       const newBio = new UserProfile();
       newBio.bio = bio!;
-      newBio.user_id = req.userId;
+      newBio.user_id = res.locals.user_id;
 
       await userProfile.save(newBio);
 
       return newBio;
     },
-    updateProfile: async (_, bio, { req }) => {
-      if (!req.userId) {
+    updateProfile: async (_, bio, { req, res }) => {
+      if (!res.locals.user_id) {
         throw new AuthenticationError('plz Loginin');
       }
 
@@ -205,7 +214,7 @@ export const resolvers = {
 
       const profile = await userProfile.findOne({
         where: {
-          user_id: req.userId,
+          user_id: res.locals.user_id,
         },
       });
       if (!profile) {
@@ -218,8 +227,8 @@ export const resolvers = {
 
       return profile;
     },
-    revokeRefreshToken: async (_, args, { req }) => {
-      if (!req.userId) {
+    revokeRefreshToken: async (_, args, { req, res }) => {
+      if (!res.locals.user_id) {
         return false;
       }
 
@@ -229,8 +238,8 @@ export const resolvers = {
       return true;
     },
 
-    followUser: async (_, args, { req }) => {
-      if (!req.userId) {
+    followUser: async (_, args, { req, res }) => {
+      if (!res.locals.user_id) {
         throw new AuthenticationError('plz Loginin');
       }
 
@@ -244,13 +253,13 @@ export const resolvers = {
         },
       });
 
-      if (userToFollow!.id === req.userId) {
+      if (userToFollow!.id === res.locals.user_id) {
         throw new ApolloError("You can't follow yourself");
       }
 
       // const alreadyFollowed = await follower.findOne({
       //   where: {
-      //     follower_id: req.userId,
+      //     follower_id: res.locals.user_id,
       //     user_id: userToFollow!.id,
       //   },
       // });
@@ -264,7 +273,7 @@ export const resolvers = {
       const createFollowing = following.save(FollowingUser);
 
       const FollowerUser = new Followers();
-      FollowingUser.user = req.userId;
+      FollowingUser.user = res.locals.user_id;
       const createFollower = follower.save(FollowerUser);
 
       await Promise.all([createFollowing, createFollower]);
@@ -272,8 +281,8 @@ export const resolvers = {
       return FollowerUser;
     },
 
-    unFollowUser: async (_, args, { req }) => {
-      if (!req.userId) {
+    unFollowUser: async (_, args, { req, res }) => {
+      if (!res.locals.user_id) {
         throw new AuthenticationError('plz Loginin');
       }
 
@@ -287,14 +296,14 @@ export const resolvers = {
         },
       });
 
-      if (unUserToFollow!.id === req.userId) {
+      if (unUserToFollow!.id === res.locals.user_id) {
         throw new ApolloError("You can't unfollow yourself");
       }
 
       const unFollowingUser = following
         .createQueryBuilder()
         .delete()
-        .where('user_id = :userId', { userId: req.userId })
+        .where('user_id = :userId', { userId: res.locals.user_id })
         .andWhere('following_id = :followingId', {
           followingId: unUserToFollow!.id,
         })
@@ -305,7 +314,7 @@ export const resolvers = {
         .delete()
         .where('user_id = :userId', { userId: unUserToFollow!.id })
         .andWhere('follower_id = :followerId', {
-          followerId: req.userId,
+          followerId: res.locals.user_id,
         })
         .execute();
       await Promise.all([unFollowingUser, unFollowerUser]);

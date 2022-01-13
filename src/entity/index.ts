@@ -10,6 +10,7 @@ import Following from './Following';
 import Followers from './Followers';
 import Tag from './Tag';
 import SocialUser from './SocialUser';
+import AuthToken from './AuthToken';
 
 const entitie = [
   Comments,
@@ -24,6 +25,7 @@ const entitie = [
   PostReadLog,
   Tag,
   SocialUser,
+  AuthToken,
 ];
 
 export default entitie;

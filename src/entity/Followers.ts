@@ -17,19 +17,29 @@ import User from './User';
   synchronize: true,
 })
 export default class Followers {
-  @PrimaryGeneratedColumn()
-  readonly id!: number;
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
 
   @Index()
   @Column('timestampz')
   @CreateDateColumn()
   created_at!: Date;
 
+  @Column('uuid')
+  user_id!: string;
+
+  @Column('uuid')
+  follower_id!: string;
+
   @Column('timestamptz')
   @UpdateDateColumn()
   updated_at!: Date;
 
   @ManyToOne(type => User, { cascade: true, eager: true })
-  @JoinColumn()
+  @JoinColumn({ name: 'user_id' })
   user!: User;
+
+  @ManyToOne(type => User, { cascade: true, eager: true })
+  @JoinColumn({ name: 'follower_id' })
+  follower!: User;
 }

@@ -18,8 +18,8 @@ import Post from './Post';
   synchronize: true,
 })
 export default class Comments {
-  @PrimaryGeneratedColumn()
-  id!: number;
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
 
   @Column('text')
   text!: string;

@@ -32,7 +32,7 @@ export default class Database {
       port: parseInt(process.env.TYPEORM_PORT || '5432', 10),
       synchronize: true,
       appname: 'woong-blog',
-      logging: process.env.TYPEORM_LOGGING === 'true',
+      logging: false,
     };
 
     return createConnection(connectionOptions);
@@ -44,7 +44,6 @@ export default class Database {
       const connection = this.connectionManager.get(CONNECTION_NAME);
       try {
         if (connection.isConnected) {
-          console.log('hello there');
           await connection.close();
         }
       } catch {}

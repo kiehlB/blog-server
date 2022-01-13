@@ -6,4 +6,5 @@ temp/
 ormconfig.json
 ormconfig*.json
 .env
+.env.development
 yarn-error.log

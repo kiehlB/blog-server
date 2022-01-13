@@ -4,12 +4,12 @@ import PostsTags from '../entity/PostsTags';
 
 function normalize<T>(
   array: T[],
-  selector: (item: T) => string | number = (item: any) => item.id
+  selector: (item: T) => string | number = (item: any) => item.id,
 ) {
   const object: {
     [key: string]: T;
   } = {};
-  array.forEach((item) => {
+  array.forEach(item => {
     object[selector(item)] = item;
   });
   return object;
@@ -22,10 +22,7 @@ const TagsLoader = async (ids: any) => {
     .where('post_id IN (:...ids)', { ids })
     .getMany();
 
-  const normalized = normalize<PostsTags>(
-    postsTags,
-    (getTags) => getTags.post_id
-  );
+  const normalized = normalize<PostsTags>(postsTags, getTags => getTags.post_id);
 
   const getTag = ids.map((id: any) => normalized[id]);
 
@@ -33,10 +30,7 @@ const TagsLoader = async (ids: any) => {
   //   array.map((pt) => pt.name),
   // );
 
-  console.log(getTag);
-
   return getTag;
 };
 
-export const tagsLoader = () =>
-  new DataLoader<string, PostsTags>(TagsLoader as any);
+export const tagsLoader = () => new DataLoader<string, PostsTags>(TagsLoader as any);

@@ -19,8 +19,8 @@ import PostsTags from './PostsTags';
   synchronize: true,
 })
 export default class Post {
-  @PrimaryGeneratedColumn()
-  id!: number;
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
 
   @Column({ length: 255 })
   title!: string;

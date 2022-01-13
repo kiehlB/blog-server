@@ -11,11 +11,14 @@ import User from './User';
 
 @Entity('user_profiles')
 export default class UserProfile {
-  @PrimaryGeneratedColumn()
-  id!: number;
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
 
   @Column({ length: 100 })
   bio!: string;
+
+  @Column({ length: 255 })
+  profile_name!: string;
 
   @Index()
   @CreateDateColumn({ type: 'timestamp' })

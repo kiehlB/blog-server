@@ -1,8 +1,9 @@
 import express from 'express';
 import { verify } from 'jsonwebtoken';
-import { sendRefreshToken, createRefreshToken, createAccessToken } from '../utils/auth';
+
 import User from '../entity/User';
 import { getRepository } from 'typeorm';
+import { generateToken, createRefreshToken, sendRefreshToken } from '../lib/token';
 const router = express.Router();
 
 router.post('/refresh_token', async (req, res) => {
@@ -31,7 +32,7 @@ router.post('/refresh_token', async (req, res) => {
 
   sendRefreshToken(res, createRefreshToken(user));
 
-  return res.send({ ok: true, accessToken: createAccessToken(user) });
+  return res.send({ ok: true, accessToken: generateToken(user) });
 });
 
 export default router;
