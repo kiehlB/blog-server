@@ -8,6 +8,7 @@ import {
   OneToOne,
   JoinColumn,
   ManyToOne,
+  JoinTable,
 } from 'typeorm';
 import Post from './Post';
 import User from './User';
@@ -36,10 +37,10 @@ export default class PostLike {
   updated_at!: Date;
 
   @ManyToOne(type => Post, { cascade: true, eager: true })
-  @JoinColumn({ name: 'post_id' })
+  @JoinTable({ name: 'post_id' })
   post!: Post;
 
   @ManyToOne(type => User, { cascade: true, eager: true })
-  @JoinColumn({ name: 'user_id' })
+  @JoinTable({ name: 'user_id' })
   user!: User;
 }

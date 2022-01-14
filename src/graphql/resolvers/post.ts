@@ -143,7 +143,15 @@ export const resolvers = {
       if (parent.comments) return parent.comments;
       return loaders.comments.load(parent.id);
     },
-
+    liked: async (parent: Post, args: any, { req, res }) => {
+      const getPostLike = getRepository(PostLike);
+      if (!res.locals.user_id) return false;
+      const liked = await getPostLike.findOne({
+        post_id: parent.id,
+        user_id: res.locals.user_id,
+      });
+      return !!liked;
+    },
     tags: async (parent: Post, __, { loaders }) => {
       return loaders.tags.load(parent.id);
     },

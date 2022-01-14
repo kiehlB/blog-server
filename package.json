@@ -6,8 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "cross-env NODE_ENV=development ts-node-dev --respawn --transpile-only  ./src/index.ts",
+    "pro": " ts-node-dev --respawn --transpile-only  ./src/index.ts",
     "build": "tsc",
-    "start": "nodemon src/server.ts"
+    "start": "nodemon src/index.ts"
   },
   "keywords": [],
   "author": "",

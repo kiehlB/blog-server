@@ -217,6 +217,7 @@ export const socialRegister = async (req, res) => {
     await userProfileRepo.save(profile);
     const tokens = await user.generateUserToken();
     setTokenCookie(res, tokens);
+
     req.body = {
       ...user,
       profile,

@@ -147,10 +147,9 @@ export const resolvers = {
         return {
           id: result.id,
           username: result.username,
-          tokens: {
-            access_token: tokens.accessToken,
-            refresh_token: tokens.refreshToken,
-          },
+
+          accessToken: tokens.accessToken,
+          refreshToken: tokens.refreshToken,
         };
       } catch (ex) {
         throw ex;
@@ -269,11 +268,13 @@ export const resolvers = {
       // }
 
       const FollowingUser = new Following();
-
+      FollowingUser.following_id = userToFollow!.id;
+      FollowingUser.user_id = res.locals.user_id;
       const createFollowing = following.save(FollowingUser);
 
       const FollowerUser = new Followers();
-      FollowingUser.user = res.locals.user_id;
+      FollowerUser.follower_id = res.locals.user_id;
+      FollowerUser.user_id = userToFollow!.id;
       const createFollower = follower.save(FollowerUser);
 
       await Promise.all([createFollowing, createFollower]);
@@ -308,6 +309,8 @@ export const resolvers = {
           followingId: unUserToFollow!.id,
         })
         .execute();
+
+      console.log(unFollowingUser);
 
       const unFollowerUser = follower
         .createQueryBuilder()

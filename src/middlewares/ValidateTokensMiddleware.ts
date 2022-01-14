@@ -43,7 +43,6 @@ export const ValidateTokensMiddleware = async (req: any, res: Response, next: an
     try {
       const userId = await refresh(res, refreshToken);
 
-      console.log('dd', userId);
       // set user_id if succeeds
       res.locals.user_id = userId;
     } catch (e) {}
