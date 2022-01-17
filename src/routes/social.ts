@@ -10,6 +10,10 @@ import {
   validateRefreshToken,
 } from '../lib/token';
 import UserProfile from '../entity/UserProfile';
+const prod =
+  process.env.NODE_ENV === 'production'
+    ? 'http://www.woongblog.ga'
+    : 'http://localhost:3000';
 
 async function getSocialAccount(params: { uid: number | string; provider }) {
   const socialAccountRepo = getRepository(SocialUser);
@@ -46,7 +50,7 @@ export const socialCallback = async (req, res) => {
       const tokens = await createTokens(user);
 
       setTokenCookie(res, tokens);
-      const redirectUrl = 'http://localhost:3000';
+      const redirectUrl = prod;
 
       const state = req.query.state
         ? (JSON.parse(req.query.state) as { next: string })
@@ -69,7 +73,7 @@ export const socialCallback = async (req, res) => {
     if (user) {
       const tokens = await createTokens(user);
       setTokenCookie(req, tokens);
-      const redirectUrl = 'https://localhost:3000';
+      const redirectUrl = prod;
 
       res.redirect(encodeURI(redirectUrl));
 
@@ -92,7 +96,8 @@ export const socialCallback = async (req, res) => {
       maxAge: 1000 * 60 * 60,
     });
 
-    const redirectUrl = 'http://localhost:3000/social';
+    const redirectUrl = `${`${prod}/social`}`;
+
     res.redirect(encodeURI(redirectUrl));
   } catch (e) {
     throw new Error('error');

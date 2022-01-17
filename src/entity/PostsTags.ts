@@ -29,17 +29,9 @@ export default class PostsTags {
   @Column('uuid')
   post_id!: string;
 
-  @Index()
-  @Column('uuid')
-  tag_id!: string;
-
   @ManyToOne(type => Post, { cascade: true })
   @JoinColumn({ name: 'post_id' })
   post!: Post;
-
-  @ManyToOne(type => Tag, { cascade: true, eager: true })
-  @JoinColumn({ name: 'tag_id' })
-  tag!: Tag;
 
   @Column('timestampz')
   @CreateDateColumn()

@@ -248,7 +248,6 @@ export const resolvers = {
       const { tags, title, body, thumbnail } = args as PostArgs;
 
       const post = new Post();
-      const newTag = new PostsTags() as any;
 
       if (checkEmpty(title!)) {
         throw new ApolloError('Title is empty');
@@ -266,6 +265,7 @@ export const resolvers = {
         const tagsData = await findTag(tags);
 
         if (tagsData) {
+          postTag.post_id = post.id;
           postTag.name = tagsData;
 
           await postTags.save(postTag);
