@@ -12,7 +12,7 @@ import {
 import UserProfile from '../entity/UserProfile';
 const prod =
   process.env.NODE_ENV === 'production'
-    ? 'http://www.woongblog.ga'
+    ? 'http://www.woongblog.xzy'
     : 'http://localhost:3000';
 
 async function getSocialAccount(params: { uid: number | string; provider }) {

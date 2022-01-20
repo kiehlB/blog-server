@@ -48,12 +48,12 @@ async function startServer() {
 
   const prod =
     process.env.NODE_ENV === 'production'
-      ? 'http://www.woongblog.ga'
+      ? 'http://www.woongblog.xzy'
       : 'http://localhost:3000';
   server.applyMiddleware({
     app,
     cors: {
-      origin: prod,
+      origin: 'http://www.woongblog.xzy',
       credentials: true,
     },
   });
