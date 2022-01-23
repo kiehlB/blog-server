@@ -11,7 +11,7 @@ const typeDef = `
     me: User
 
     post(id: String): Post
-    posts: [Post]
+    posts(cursor: String, after: String) :[Post]
     getImageUrl: ImageUrl
     topFivePost(offset: Int, limit: Int): [Post]
 

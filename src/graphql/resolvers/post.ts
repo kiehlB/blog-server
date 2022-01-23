@@ -17,6 +17,7 @@ export const typeDef = gql`
     height: Int
     crop: String
   }
+
   type Post {
     id: String
     title: String
@@ -34,7 +35,10 @@ export const typeDef = gql`
     tags: Tag
     post_id: String
     liked: Boolean
+    hasMore: Boolean
+    endCursor: String
   }
+
   type UploadOptionsInput {
     public_id: String
     folder: String
@@ -181,13 +185,60 @@ export const resolvers = {
       return findPost;
     },
 
-    posts: async (_, __, { req }) => {
+    posts: async (_, { cursor, after }, { req }, { limit = 3 }) => {
       try {
         const query = await getManager()
           .createQueryBuilder(Post, 'post')
+          .limit(limit)
           .orderBy('post.released_at', 'DESC')
           .addOrderBy('post.id', 'DESC')
           .leftJoinAndSelect('post.user', 'user');
+
+        // let first = 5;
+        // if (limit !== undefined) {
+        //   const min = 1;
+        //   const max = 25;
+        //   if (limit < min || limit > max) {
+        //     throw new ApolloError(`Invalid limit value (min: ${min}, max: ${max})`);
+        //   }
+        //   first = limit;
+        // }
+
+        // if (after) {
+        //   if (limit !== undefined) {
+        //     const index = posts.findIndex(item => item.id === after);
+        //     if (index === -1) {
+        //       throw new ApolloError(`Invalid after value: cursor not found.`);
+        //     }
+        //     after = index + 1;
+        //     if (after === posts.length) {
+        //       throw new ApolloError(
+        //         `Invalid after value: no items after provided cursor.`,
+        //       );
+        //     }
+        //   }
+        // }
+
+        // const pageInfoPost = posts.slice(after, after + first);
+
+        // const lastName = pageInfoPost[pageInfoPost.length - 1];
+
+        if (cursor) {
+          const post = await getRepository(Post).findOne({
+            id: cursor,
+          });
+          if (!post) {
+            throw new ApolloError('invalid cursor');
+          }
+          query.andWhere('post.released_at < :date', {
+            date: post.released_at,
+            id: post.id,
+          });
+          query.orWhere('post.released_at = :date AND post.id < :id', {
+            date: post.released_at,
+            id: post.id,
+          });
+        }
 
         const posts = await query.getMany();
         return posts;

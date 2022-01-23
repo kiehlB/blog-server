@@ -53,7 +53,7 @@ async function startServer() {
   server.applyMiddleware({
     app,
     cors: {
-      origin: 'http://www.woongblog.xzy',
+      origin: 'http://localhost:3000',
       credentials: true,
     },
   });

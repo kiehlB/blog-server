@@ -48,6 +48,12 @@ export default class Post {
   @Column({ length: 700, nullable: true })
   url!: string;
 
+  @Column({ length: 255, nullable: true })
+  endCursor!: string;
+
+  @Column({ default: false })
+  hasMore!: boolean;
+
   @Index()
   @Column({
     type: 'timestamptz',
