@@ -185,7 +185,7 @@ export const resolvers = {
       return findPost;
     },
 
-    posts: async (_, { cursor, after }, { req }, { limit = 3 }) => {
+    posts: async (_, { cursor, after }, { req }, { limit = 9 }) => {
       try {
         const query = await getManager()
           .createQueryBuilder(Post, 'post')
@@ -284,6 +284,26 @@ export const resolvers = {
         });
 
         return Posts;
+      }
+    },
+    searchPosts: async (_: any, { cursor, searchInput, offset, username }: any) => {
+      try {
+        const formattedQuery = searchInput.trim();
+
+        const query = await getManager()
+          .createQueryBuilder(Post, 'post')
+
+          .orderBy('post.released_at', 'DESC')
+          .addOrderBy('post.id', 'DESC')
+          .leftJoinAndSelect('post.user', 'user')
+          .where('to_tsvector(post.title) @@ to_tsquery(:searchInput)', {
+            searchInput: `${formattedQuery}:*`,
+          });
+
+        const posts = await query.getMany();
+        return posts;
+      } catch (err) {
+        throw Error(err);
       }
     },
   },

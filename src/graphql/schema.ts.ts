@@ -12,6 +12,7 @@ const typeDef = `
 
     post(id: String): Post
     posts(cursor: String, after: String) :[Post]
+    searchPosts(searchInput: String):[Post]
     getImageUrl: ImageUrl
     topFivePost(offset: Int, limit: Int): [Post]
 
