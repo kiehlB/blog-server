@@ -66,7 +66,7 @@ export default class Post {
   @CreateDateColumn()
   created_at!: Date;
 
-  @OneToMany(type => Comments, comment => comment.post)
+  @OneToMany(type => Comments, comment => comment.post, { cascade: true })
   comments!: Comments[];
 
   @ManyToMany(type => PostsTags, tag => tag.post)

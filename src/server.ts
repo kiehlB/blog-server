@@ -3,7 +3,8 @@ import 'reflect-metadata';
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import { ApolloServer } from 'apollo-server-express';
-import schema from './graphql/schema.ts';
+import schema from './graphql/schema';
+
 import session from 'express-session';
 import auth from './routes/auth';
 import social from './routes';
@@ -14,10 +15,19 @@ import {
 import { ValidateTokensMiddleware } from './middlewares/ValidateTokensMiddleware';
 import { __prod__, COOKIE_NAME, COOKIE_SECRET } from './constants';
 import createLoaders from './loaders/createLoader';
+import cors from 'cors';
 
 const app = express();
 
 app.use(cookieParser());
+
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  }),
+);
+app.set('trust proxy', 1);
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use('/', auth);
@@ -33,6 +43,7 @@ async function startServer() {
     context: ({ req, res }) => ({
       req,
       res,
+
       loaders: createLoaders(),
     }),
     introspection: true,
@@ -52,9 +63,12 @@ async function startServer() {
       : 'http://localhost:3000';
   server.applyMiddleware({
     app,
+    // cors: {
+    //   origin: 'http://localhost:3000',
+    //   credentials: true,
+    // },
     cors: {
-      origin: 'http://localhost:3000',
-      credentials: true,
+      origin: false,
     },
   });
 }

@@ -310,8 +310,6 @@ export const resolvers = {
         })
         .execute();
 
-      console.log(unFollowingUser);
-
       const unFollowerUser = follower
         .createQueryBuilder()
         .delete()
@@ -325,7 +323,14 @@ export const resolvers = {
       return unUserToFollow;
     },
     logout: async (_, args, { res }) => {
-      sendRefreshToken(res, '');
+      const accessToken = '';
+      const refreshToken = '';
+      const token = {
+        accessToken,
+        refreshToken,
+      };
+
+      setTokenCookie(res, token);
       return true;
     },
   },

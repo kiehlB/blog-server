@@ -4,6 +4,7 @@ export type SocialProvider = 'facebook' | 'github' | 'google';
 
 const { GITHUB_CLIENT_ID } = process.env;
 
+// https://www.woongblog.xyz/social
 const redirectPath = `/api/v2/auth/callback/`;
 export const redirectUri = `http://localhost:4000${redirectPath}`;
 

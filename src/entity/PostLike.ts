@@ -37,10 +37,10 @@ export default class PostLike {
   updated_at!: Date;
 
   @ManyToOne(type => Post, { cascade: true, eager: true })
-  @JoinTable({ name: 'post_id' })
+  @JoinColumn({ name: 'post_id' })
   post!: Post;
 
   @ManyToOne(type => User, { cascade: true, eager: true })
-  @JoinTable({ name: 'user_id' })
+  @JoinColumn({ name: 'user_id' })
   user!: User;
 }

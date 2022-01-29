@@ -12,7 +12,7 @@ import {
 import UserProfile from '../entity/UserProfile';
 const prod =
   process.env.NODE_ENV === 'production'
-    ? 'http://www.woongblog.xzy'
+    ? 'https://www.woongblog.xyz'
     : 'http://localhost:3000';
 
 async function getSocialAccount(params: { uid: number | string; provider }) {
@@ -50,7 +50,7 @@ export const socialCallback = async (req, res) => {
       const tokens = await createTokens(user);
 
       setTokenCookie(res, tokens);
-      const redirectUrl = prod;
+      const redirectUrl = 'http://localhost:3000';
 
       const state = req.query.state
         ? (JSON.parse(req.query.state) as { next: string })
@@ -73,11 +73,10 @@ export const socialCallback = async (req, res) => {
     if (user) {
       const tokens = await createTokens(user);
       setTokenCookie(req, tokens);
-      const redirectUrl = prod;
+      const redirectUrl = 'http://localhost:3000';
 
       res.redirect(encodeURI(redirectUrl));
 
-      console.log(encodeURI(redirectUrl));
       return;
     }
 
@@ -96,7 +95,7 @@ export const socialCallback = async (req, res) => {
       maxAge: 1000 * 60 * 60,
     });
 
-    const redirectUrl = `${`${prod}/social`}`;
+    const redirectUrl = `${`${'http://localhost:3000'}/social`}`;
 
     res.redirect(encodeURI(redirectUrl));
   } catch (e) {
@@ -146,14 +145,16 @@ export const socialRedirect = async (req, res) => {
   }
 
   const loginUrl = generateSocialLoginLink(provider, next);
-
+  console.log(loginUrl);
   res.redirect(loginUrl);
 };
 
 export const socialRegister = async (req, res) => {
   // check token existancy
 
+  console.log(req.cookies['register_token']);
   const registerToken = req.cookies['register_token'];
+
   if (!registerToken) {
     res.status = 401;
     return;
@@ -222,6 +223,8 @@ export const socialRegister = async (req, res) => {
     await userProfileRepo.save(profile);
     const tokens = await user.generateUserToken();
     setTokenCookie(res, tokens);
+
+    res.redirect(encodeURI('https://www.woongblog.xyz'));
 
     req.body = {
       ...user,

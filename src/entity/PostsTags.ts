@@ -10,6 +10,8 @@ import {
   ManyToOne,
   getRepository,
   getManager,
+  JoinTable,
+  ManyToMany,
 } from 'typeorm';
 import Post from './Post';
 import Tag from './Tag';
@@ -29,8 +31,8 @@ export default class PostsTags {
   @Column('uuid')
   post_id!: string;
 
-  @ManyToOne(type => Post, { cascade: true })
-  @JoinColumn({ name: 'post_id' })
+  @ManyToMany(type => Post, { cascade: true })
+  @JoinTable({ name: 'post_id' })
   post!: Post;
 
   @Column('timestampz')

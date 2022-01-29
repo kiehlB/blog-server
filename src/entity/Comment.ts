@@ -57,7 +57,7 @@ export default class Comments {
   @JoinColumn({ name: 'user_id' })
   user!: User;
 
-  @ManyToOne(type => Post, post => post.comments)
+  @ManyToOne(type => Post, post => post.comments, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'post_id' })
   post!: Post;
 
