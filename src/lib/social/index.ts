@@ -6,7 +6,7 @@ const { GITHUB_CLIENT_ID } = process.env;
 
 // https://www.woongblog.xyz/social
 const redirectPath = `/api/v2/auth/callback/`;
-export const redirectUri = `https://api.woongblog.xyz${redirectPath}`;
+export const redirectUri = `https://www.woongblog.xyz${redirectPath}`;
 
 export function generateSocialLoginLink(provider: SocialProvider, next: string = '/') {
   const generators = {

@@ -3,12 +3,7 @@ import SocialUser from '../entity/SocialUser';
 import User from '../entity/User';
 import { generateSocialLoginLink } from '../lib/social';
 import { getGithubAccessToken, getGithubProfile } from '../lib/social/github';
-import {
-  decodeToken,
-  generateToken,
-  setTokenCookie,
-  validateRefreshToken,
-} from '../lib/token';
+import { decodeToken, generateToken, setTokenCookie } from '../lib/token';
 import UserProfile from '../entity/UserProfile';
 const prod =
   process.env.NODE_ENV === 'production'
