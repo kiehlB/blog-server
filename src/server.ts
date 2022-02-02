@@ -24,7 +24,7 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: 'https://www.woongblog.xzy',
+    origin: 'https://www.woongblog.xyz',
     credentials: true,
   }),
 );
