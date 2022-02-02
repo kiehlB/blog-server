@@ -64,24 +64,32 @@ export function setTokenCookie(
 ) {
   // set cookie
   res.cookie('access_token', tokens.accessToken, {
-    // httpOnly: true,
+    httpOnly: true,
+    secure: false,
+    domain: '.woongblog.xyz',
     maxAge: 1000 * 60 * 60,
   });
 
   res.cookie('refresh_token', tokens.refreshToken, {
-    // httpOnly: true,
-    maxAge: 1000 * 60 * 60 * 24 * 30,
+    httpOnly: true,
+    secure: false,
+    domain: '.woongblog.xyz',
+    maxAge: 1000 * 60 * 60,
   });
 
   // Following codes are for webpack-dev-server proxy
   res.cookie('access_token', tokens.accessToken, {
-    // httpOnly: true,
+    httpOnly: true,
+    secure: false,
+    domain: '.woongblog.xyz',
     maxAge: 1000 * 60 * 60,
   });
 
   res.cookie('refresh_token', tokens.refreshToken, {
-    // httpOnly: true,
-    maxAge: 1000 * 60 * 60 * 24 * 30,
+    httpOnly: true,
+    secure: false,
+    domain: '.woongblog.xyz',
+    maxAge: 1000 * 60 * 60,
   });
 }
 
