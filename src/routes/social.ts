@@ -4,7 +4,7 @@ import User from '../entity/User';
 import { generateSocialLoginLink } from '../lib/social';
 import { getGithubAccessToken, getGithubProfile } from '../lib/social/github';
 import {
-  createTokens,
+  decodeToken,
   generateToken,
   setTokenCookie,
   validateRefreshToken,
@@ -47,7 +47,7 @@ export const socialCallback = async (req, res) => {
         throw new Error('User is missing');
       }
 
-      const tokens = await createTokens(user);
+      const tokens = await user.generateUserToken();
 
       setTokenCookie(res, tokens);
       const redirectUrl = 'https://www.woongblog.xyz';
@@ -71,7 +71,7 @@ export const socialCallback = async (req, res) => {
 
     // Email exists -> Login
     if (user) {
-      const tokens = await createTokens(user);
+      const tokens = await user.generateUserToken();
       setTokenCookie(req, tokens);
       const redirectUrl = 'https://www.woongblog.xyz';
 
@@ -145,14 +145,14 @@ export const socialRedirect = async (req, res) => {
   }
 
   const loginUrl = generateSocialLoginLink(provider, next);
-  console.log(loginUrl);
+  console.log('link to login', loginUrl);
   res.redirect(loginUrl);
 };
 
 export const socialRegister = async (req, res) => {
   // check token existancy
 
-  console.log(req.cookies['register_token']);
+  console.log('reg token', req.cookies['register_token']);
   const registerToken = req.cookies['register_token'];
 
   if (!registerToken) {
@@ -169,7 +169,7 @@ export const socialRegister = async (req, res) => {
 
   let decoded = null;
   try {
-    decoded = await validateRefreshToken(registerToken);
+    decoded = await decodeToken(registerToken);
   } catch (e) {
     // failed to decode token
     res.status = 401;

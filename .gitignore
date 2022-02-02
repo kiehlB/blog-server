@@ -8,3 +8,4 @@ ormconfig*.json
 .env
 .env.development
 yarn-error.log
+/dist
