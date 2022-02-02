@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateSocialLoginLink = exports.redirectUri = void 0;
 const { GITHUB_CLIENT_ID } = process.env;
+// https://www.woongblog.xyz/social
 const redirectPath = `/api/v2/auth/callback/`;
 exports.redirectUri = `http://localhost:4000${redirectPath}`;
 function generateSocialLoginLink(provider, next = '/') {

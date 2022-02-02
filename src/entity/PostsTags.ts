@@ -31,8 +31,8 @@ export default class PostsTags {
   @Column('uuid')
   post_id!: string;
 
-  @ManyToMany(type => Post, { cascade: true })
-  @JoinTable({ name: 'post_id' })
+  @ManyToOne(type => Post, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'post_id' })
   post!: Post;
 
   @Column('timestampz')

@@ -42,12 +42,12 @@ __decorate([
 ], PostLike.prototype, "updated_at", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(type => Post_1.default, { cascade: true, eager: true }),
-    (0, typeorm_1.JoinTable)({ name: 'post_id' }),
+    (0, typeorm_1.JoinColumn)({ name: 'post_id' }),
     __metadata("design:type", Post_1.default)
 ], PostLike.prototype, "post", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(type => User_1.default, { cascade: true, eager: true }),
-    (0, typeorm_1.JoinTable)({ name: 'user_id' }),
+    (0, typeorm_1.JoinColumn)({ name: 'user_id' }),
     __metadata("design:type", User_1.default)
 ], PostLike.prototype, "user", void 0);
 PostLike = __decorate([

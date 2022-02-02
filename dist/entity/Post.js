@@ -79,11 +79,11 @@ __decorate([
     __metadata("design:type", Date)
 ], Post.prototype, "created_at", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(type => Comment_1.default, comment => comment.post),
+    (0, typeorm_1.OneToMany)(type => Comment_1.default, comment => comment.post, { cascade: true }),
     __metadata("design:type", Array)
 ], Post.prototype, "comments", void 0);
 __decorate([
-    (0, typeorm_1.ManyToMany)(type => PostsTags_1.default, tag => tag.post),
+    (0, typeorm_1.OneToMany)(type => PostsTags_1.default, tag => tag.post, { cascade: true }),
     __metadata("design:type", Array)
 ], Post.prototype, "tags", void 0);
 Post = __decorate([

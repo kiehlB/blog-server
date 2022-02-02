@@ -21,7 +21,7 @@ const github_1 = require("../lib/social/github");
 const token_1 = require("../lib/token");
 const UserProfile_1 = __importDefault(require("../entity/UserProfile"));
 const prod = process.env.NODE_ENV === 'production'
-    ? 'http://www.woongblog.xzy'
+    ? 'https://www.woongblog.xyz'
     : 'http://localhost:3000';
 function getSocialAccount(params) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -50,7 +50,7 @@ const socialCallback = (req, res) => __awaiter(void 0, void 0, void 0, function*
             }
             const tokens = yield (0, token_1.createTokens)(user);
             (0, token_1.setTokenCookie)(res, tokens);
-            const redirectUrl = prod;
+            const redirectUrl = 'http://localhost:3000';
             const state = req.query.state
                 ? JSON.parse(req.query.state)
                 : null;
@@ -69,9 +69,8 @@ const socialCallback = (req, res) => __awaiter(void 0, void 0, void 0, function*
         if (user) {
             const tokens = yield (0, token_1.createTokens)(user);
             (0, token_1.setTokenCookie)(req, tokens);
-            const redirectUrl = prod;
+            const redirectUrl = 'http://localhost:3000';
             res.redirect(encodeURI(redirectUrl));
-            console.log(encodeURI(redirectUrl));
             return;
         }
         // Register new social account
@@ -86,7 +85,7 @@ const socialCallback = (req, res) => __awaiter(void 0, void 0, void 0, function*
         res.cookie('register_token', registerToken, {
             maxAge: 1000 * 60 * 60,
         });
-        const redirectUrl = `${`${prod}/social`}`;
+        const redirectUrl = `${`${'http://localhost:3000'}/social`}`;
         res.redirect(encodeURI(redirectUrl));
     }
     catch (e) {
@@ -131,11 +130,13 @@ const socialRedirect = (req, res) => __awaiter(void 0, void 0, void 0, function*
         return;
     }
     const loginUrl = (0, social_1.generateSocialLoginLink)(provider, next);
+    console.log(loginUrl);
     res.redirect(loginUrl);
 });
 exports.socialRedirect = socialRedirect;
 const socialRegister = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // check token existancy
+    console.log(req.cookies['register_token']);
     const registerToken = req.cookies['register_token'];
     if (!registerToken) {
         res.status = 401;
@@ -190,6 +191,7 @@ const socialRegister = (req, res) => __awaiter(void 0, void 0, void 0, function*
         yield userProfileRepo.save(profile);
         const tokens = yield user.generateUserToken();
         (0, token_1.setTokenCookie)(res, tokens);
+        res.redirect(encodeURI('https://www.woongblog.xyz'));
         req.body = Object.assign(Object.assign({}, user), { profile, tokens: {
                 access_token: tokens.accessToken,
                 refresh_token: tokens.refreshToken,

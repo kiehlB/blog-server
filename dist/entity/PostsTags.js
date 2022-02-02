@@ -31,7 +31,7 @@ __decorate([
     __metadata("design:type", String)
 ], PostsTags.prototype, "post_id", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(type => Post_1.default, { cascade: true }),
+    (0, typeorm_1.ManyToOne)(type => Post_1.default, { onDelete: 'CASCADE' }),
     (0, typeorm_1.JoinColumn)({ name: 'post_id' }),
     __metadata("design:type", Post_1.default)
 ], PostsTags.prototype, "post", void 0);

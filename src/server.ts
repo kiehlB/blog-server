@@ -16,6 +16,7 @@ import { ValidateTokensMiddleware } from './middlewares/ValidateTokensMiddleware
 import { __prod__, COOKIE_NAME, COOKIE_SECRET } from './constants';
 import createLoaders from './loaders/createLoader';
 import cors from 'cors';
+import bodyParserErrorHandler from 'express-body-parser-error-handler';
 
 const app = express();
 
@@ -23,13 +24,17 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: 'https://www.woongblog.xzy',
     credentials: true,
   }),
 );
+
 app.set('trust proxy', 1);
+
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use(bodyParserErrorHandler());
+
 app.use('/', auth);
 
 app.use(ValidateTokensMiddleware);

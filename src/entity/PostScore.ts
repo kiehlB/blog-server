@@ -48,7 +48,7 @@ export default class PostScore {
   @JoinColumn({ name: 'user_id' })
   user!: User;
 
-  @ManyToOne(type => Post)
+  @ManyToOne(type => Post, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'post_id' })
   post!: User;
 }

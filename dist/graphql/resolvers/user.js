@@ -280,7 +280,6 @@ exports.resolvers = {
                 followingId: unUserToFollow.id,
             })
                 .execute();
-            console.log(unFollowingUser);
             const unFollowerUser = follower
                 .createQueryBuilder()
                 .delete()
@@ -293,7 +292,13 @@ exports.resolvers = {
             return unUserToFollow;
         }),
         logout: (_, args, { res }) => __awaiter(void 0, void 0, void 0, function* () {
-            (0, token_1.sendRefreshToken)(res, '');
+            const accessToken = '';
+            const refreshToken = '';
+            const token = {
+                accessToken,
+                refreshToken,
+            };
+            (0, token_1.setTokenCookie)(res, token);
             return true;
         }),
     },

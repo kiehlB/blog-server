@@ -68,7 +68,7 @@ __decorate([
     __metadata("design:type", User_1.default)
 ], Comments.prototype, "user", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(type => Post_1.default, post => post.comments),
+    (0, typeorm_1.ManyToOne)(type => Post_1.default, post => post.comments, { onDelete: 'CASCADE' }),
     (0, typeorm_1.JoinColumn)({ name: 'post_id' }),
     __metadata("design:type", Post_1.default)
 ], Comments.prototype, "post", void 0);

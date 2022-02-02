@@ -36,7 +36,7 @@ export default class PostLike {
   @UpdateDateColumn()
   updated_at!: Date;
 
-  @ManyToOne(type => Post, { cascade: true, eager: true })
+  @ManyToOne(type => Post, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'post_id' })
   post!: Post;
 

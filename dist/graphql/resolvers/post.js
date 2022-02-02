@@ -180,7 +180,7 @@ exports.resolvers = {
                 .getOne();
             return findPost;
         }),
-        posts: (_, { cursor, after }, { req }, { limit = 3 }) => __awaiter(void 0, void 0, void 0, function* () {
+        posts: (_, { cursor, after }, { req }, { limit = 9 }) => __awaiter(void 0, void 0, void 0, function* () {
             try {
                 const query = yield (0, typeorm_1.getManager)()
                     .createQueryBuilder(Post_1.default, 'post')
@@ -263,6 +263,24 @@ exports.resolvers = {
                     },
                 });
                 return Posts;
+            }
+        }),
+        searchPosts: (_, { cursor, searchInput, offset, username }) => __awaiter(void 0, void 0, void 0, function* () {
+            try {
+                const formattedQuery = searchInput.trim();
+                const query = yield (0, typeorm_1.getManager)()
+                    .createQueryBuilder(Post_1.default, 'post')
+                    .orderBy('post.released_at', 'DESC')
+                    .addOrderBy('post.id', 'DESC')
+                    .leftJoinAndSelect('post.user', 'user')
+                    .where('to_tsvector(post.title) @@ to_tsquery(:searchInput)', {
+                    searchInput: `${formattedQuery}:*`,
+                });
+                const posts = yield query.getMany();
+                return posts;
+            }
+            catch (err) {
+                throw Error(err);
             }
         }),
     },

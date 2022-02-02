@@ -50,7 +50,7 @@ export const socialCallback = async (req, res) => {
       const tokens = await createTokens(user);
 
       setTokenCookie(res, tokens);
-      const redirectUrl = 'http://localhost:3000';
+      const redirectUrl = 'https://www.woongblog.xyz';
 
       const state = req.query.state
         ? (JSON.parse(req.query.state) as { next: string })
@@ -73,7 +73,7 @@ export const socialCallback = async (req, res) => {
     if (user) {
       const tokens = await createTokens(user);
       setTokenCookie(req, tokens);
-      const redirectUrl = 'http://localhost:3000';
+      const redirectUrl = 'https://www.woongblog.xyz';
 
       res.redirect(encodeURI(redirectUrl));
 
@@ -95,7 +95,7 @@ export const socialCallback = async (req, res) => {
       maxAge: 1000 * 60 * 60,
     });
 
-    const redirectUrl = `${`${'http://localhost:3000'}/social`}`;
+    const redirectUrl = `${`${'https://www.woongblog.xyz'}/social`}`;
 
     res.redirect(encodeURI(redirectUrl));
   } catch (e) {

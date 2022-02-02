@@ -10,6 +10,7 @@ import {
   ManyToOne,
   OneToMany,
   ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import User from './User';
 import Comments from './Comment';
@@ -69,6 +70,6 @@ export default class Post {
   @OneToMany(type => Comments, comment => comment.post, { cascade: true })
   comments!: Comments[];
 
-  @ManyToMany(type => PostsTags, tag => tag.post)
+  @OneToMany(type => PostsTags, tag => tag.post, { cascade: true })
   tags!: PostsTags[];
 }

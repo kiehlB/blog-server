@@ -25,9 +25,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const from_schema_1 = require("@gql2ts/from-schema");
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
-const schema_ts_1 = __importDefault(require("../graphql/schema.ts"));
-const schema = schema_ts_1.default;
+const schema_1 = __importDefault(require("../graphql/schema"));
+const schema = schema_1.default;
 const typescriptTypes = (0, from_schema_1.generateNamespace)('MyGraphQL', schema);
-fs.writeFile(path.join(__dirname, '../types/schema.d.ts'), typescriptTypes, (err) => {
+fs.writeFile(path.join(__dirname, '../types/schema.d.ts'), typescriptTypes, err => {
     console.log(err);
 });
