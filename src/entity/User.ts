@@ -20,24 +20,24 @@ export default class User {
   @Column({ unique: true, length: 20 })
   username!: string;
 
-  @Column('text', { nullable: true })
+  @Column('text')
   password!: string;
 
   @Index()
-  @Column({ unique: true, length: 20, nullable: true })
+  @Column({ unique: true, length: 20 })
   email!: string | null;
 
   @Column({ default: false })
   email_verified!: boolean;
 
-  @Column('int', { default: 0 })
-  tokenVersion!: number;
-
   @Index()
   @CreateDateColumn({ type: 'timestamp' })
   created_at!: Date;
 
-  @OneToOne(type => UserProfile, profile => profile.user)
+  @OneToOne(
+    type => UserProfile,
+    profile => profile.user,
+  )
   profile!: UserProfile;
 
   async generateUserToken() {

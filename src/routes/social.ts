@@ -87,7 +87,10 @@ export const socialCallback = async (req, res) => {
     });
 
     res.cookie('register_token', registerToken, {
-      maxAge: 1000 * 60 * 60,
+        httpOnly: true,
+    secure: false,
+    domain: '.woongblog.xyz',
+    maxAge: 1000 * 60 * 60
     });
 
     const redirectUrl = `${`${'https://www.woongblog.xyz'}/social`}`;

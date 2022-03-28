@@ -19,26 +19,23 @@ import cors from 'cors';
 import bodyParserErrorHandler from 'express-body-parser-error-handler';
 
 const app = express();
-
 app.use(cookieParser());
-
 app.use(
   cors({
-    origin: 'https://www.woongblog.xyz',
+    origin:
+      process.env.NODE_ENV === 'development'
+        ? 'http://localhost:3000'
+        : 'https://www.woongblog.xyz',
     credentials: true,
   }),
 );
 
 app.set('trust proxy', 1);
-
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(bodyParserErrorHandler());
-
 app.use('/', auth);
-
 app.use(ValidateTokensMiddleware);
-
 app.get('/', (_req, res) => res.send('hello'));
 app.use('/api/v2/auth', social);
 
@@ -48,11 +45,9 @@ async function startServer() {
     context: ({ req, res }) => ({
       req,
       res,
-
       loaders: createLoaders(),
     }),
     introspection: true,
-
     plugins: [
       process.env.NODE_ENV === 'production'
         ? ApolloServerPluginLandingPageDisabled()
@@ -62,16 +57,8 @@ async function startServer() {
 
   await server.start();
 
-  const prod =
-    process.env.NODE_ENV === 'production'
-      ? 'http://www.woongblog.xzy'
-      : 'http://localhost:3000';
   server.applyMiddleware({
     app,
-    // cors: {
-    //   origin: 'http://localhost:3000',
-    //   credentials: true,
-    // },
     cors: {
       origin: false,
     },
