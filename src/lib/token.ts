@@ -1,6 +1,8 @@
 import jwt, { sign, verify } from 'jsonwebtoken';
 import User from '../entity/User';
 import { Response } from 'express';
+import AuthToken from '../entity/AuthToken';
+import { getRepository } from 'typeorm';
 
 export const generateToken = async (user: any, options?): Promise<string> => {
   const jwtOptions = {
@@ -27,18 +29,6 @@ export const createAccessToken = (user: User) => {
   return sign({ userId: user.id }, process.env.ACCESS_TOKEN_SECRET!, {
     expiresIn: '15min',
   });
-};
-
-export const createRefreshToken = (user: User) => {
-  return sign(
-    {
-      user: { userId: user.id, tokenVersion: user.tokenVersion },
-    },
-    process.env.REFRESH_TOKEN_SECRET!,
-    {
-      expiresIn: '3d',
-    },
-  );
 };
 
 export const validateAccessToken = (token: string) => {
@@ -93,12 +83,6 @@ export function setTokenCookie(
   });
 }
 
-export const createTokens = (user: User) => {
-  const accessToken = createAccessToken(user);
-  const refreshToken = createRefreshToken(user);
-  return { accessToken, refreshToken };
-};
-
 export const sendRefreshToken = (res: Response, token: string) => {
   res.cookie('refresh_token', token, {
     httpOnly: true,
@@ -117,4 +101,72 @@ export const decodeToken = async <T = any>(token: string): Promise<T> => {
       resolve(decoded as any);
     });
   });
+};
+
+const generateUserToken = async () => {
+  const authToken = new AuthToken();
+  const authUser = new User();
+  authToken.user_id = authUser.id;
+  await getRepository(AuthToken).save(authToken);
+
+  const refreshToken = await generateToken(
+    {
+      user_id: authUser.id,
+      token_id: authToken.id,
+    },
+    {
+      subject: 'refresh_token',
+      expiresIn: '30d',
+    },
+  );
+
+  const accessToken = await generateToken(
+    {
+      user_id: authUser.id,
+    },
+    {
+      subject: 'access_token',
+      expiresIn: '1h',
+    },
+  );
+
+  return {
+    refreshToken,
+    accessToken,
+  };
+};
+
+const refreshUserToken = async (
+  tokenId: string,
+  refreshTokenExp: number,
+  originalRefreshToken: string,
+) => {
+  const authUser = new User();
+  const now = new Date().getTime();
+  const diff = refreshTokenExp * 1000 - now;
+  let refreshToken = originalRefreshToken;
+
+  if (diff < 1000 * 60 * 60 * 24 * 15) {
+    refreshToken = await generateToken(
+      {
+        user_id: authUser.id,
+        token_id: tokenId,
+      },
+      {
+        subject: 'refresh_token',
+        expiresIn: '30d',
+      },
+    );
+  }
+  const accessToken = await generateToken(
+    {
+      user_id: authUser.id,
+    },
+    {
+      subject: 'access_token',
+      expiresIn: '1h',
+    },
+  );
+
+  return { refreshToken, accessToken };
 };

@@ -24,7 +24,7 @@ const typeDef = `
   type Mutation {
     register(email: String!, username: String!, password: String!): User!
     login(email: String!, password: String!): User!
-    createProfile(bio: String): UserProfile!
+    createProfile(bio: String , profile_name:String): UserProfile!
     updateProfile(bio: String): UserProfile!
     followUser(username: String!): Followers
     unFollowUser(username: String!): Followers!

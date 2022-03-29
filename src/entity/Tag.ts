@@ -5,11 +5,8 @@ import {
   Index,
   UpdateDateColumn,
   CreateDateColumn,
-  OneToOne,
   JoinColumn,
   ManyToOne,
-  getRepository,
-  getManager,
 } from 'typeorm';
 import Post from './Post';
 
